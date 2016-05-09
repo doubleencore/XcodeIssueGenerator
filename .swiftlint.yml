@@ -1,0 +1,39 @@
+opt_in_rules:
+  - force_unwrapping
+  - empty_count
+  - missing_docs
+disabled_rules:
+#   - closing_brace
+#   - colon
+#   - comma
+#   - conditional_binding_cascade
+#   - control_statement
+#   - custom_rules
+   - cyclomatic_complexity
+#   - file_length
+#   - missing_docs
+#   - force_cast
+#   - force_try
+#   - function_body_length
+#   - function_parameter_count
+#   - leading_whitespace
+#   - legacy_cggeometry_functions
+#   - legacy_constant
+#   - legacy_constructor
+   - line_length
+#   - nesting
+#   - opening_brace
+#   - operator_whitespace
+#   - return_arrow_whitespace
+#   - statement_position
+   - todo
+#   - trailing_newline
+#   - trailing_semicolon
+#   - trailing_whitespace
+#   - type_body_length
+   - type_name
+#   - valid_docs
+#   - variable_name
+excluded: # paths to ignore during linting. Takes precedence over `included`.
+  - XcodeIssueGeneratorTests
+reporter: "xcode" # reporter type (xcode, json, csv, checkstyle)
