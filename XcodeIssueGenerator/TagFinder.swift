@@ -29,7 +29,7 @@ struct TagFinder {
     // MARK: - Static
 
     struct K {
-        static let markableFileExtensions = ["swift", "h", "m"]
+        static let markableFileExtensions = ["swift", "h", "hh", "m", "mm", "cc", "cpp"]
     }
 
     // MARK: - TagFinder
