@@ -3,7 +3,7 @@
 An executable that can be placed in a Run Script Build Phase that marks comments like ```// TODO:``` or ```// SERIOUS:``` as warnings or errors so they display in the Xcode Issue Navigator. Warning or error behavior for comments can be configured differently per build configuration—you can have a ```// TODO:``` be a warning in DEBUG and be an error in RELEASE for instance. An upside of using this program as compared to something like ```#warning``` pragmas is we can keep "treat warnings as errors" on in the host project build settings since this executable runs post-build.
 
 ## Setup
-Copy XcodeIssueGenerator to your ```/usr/local/bin``` directory and make it executable: ```chmod +x /usr/local/bin/XcodeIssueGenerator```. Call the XcodeIssueGenerator executable from a Run Script build phase.
+Download the latest [release](https://github.com/doubleencore/XcodeIssueGenerator/releases) or build the project yourself. Copy the XcodeIssueGenerator executable to your ```/usr/local/bin``` directory and make it executable: ```chmod +x /usr/local/bin/XcodeIssueGenerator```. Call the XcodeIssueGenerator executable from a Run Script build phase.
 
 ### Adding a Run Script Build Phase
 Select the target on which to run XcodeIssueGenerator, select Build Phases, and select the "+" icon to add a new Run Script phase. Then put in a call to XcodeIssueGenerator as in the example below.
