@@ -13,7 +13,7 @@ Select the target on which to run XcodeIssueGenerator, select Build Phases, and 
 # Mark WARNINGs and SERIOUSs as warnings and TODOs as errors in RELEASE builds excluding the Vendor and Third Party directories.
 
 if which XcodeIssueGenerator >/dev/null; then
-    /usr/local/bin/XcodeIssueGenerator -b RELEASE -w "WARNING, SERIOUS" -e TODO -x "Vendor/, Third Party/"
+    XcodeIssueGenerator -b RELEASE -w "WARNING, SERIOUS" -e TODO -x "Vendor/, Third Party/"
 else
     echo "warning: XcodeIssueGenerator is not installed."
 fi
