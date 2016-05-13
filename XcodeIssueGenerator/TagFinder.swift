@@ -108,7 +108,7 @@ struct TagFinder {
     private func makeRegexWithTags(tags: [String]?) -> NSRegularExpression? {
         guard let tags = tags else { return nil }
 
-        let pattern = "// (\(tags.joinWithSeparator("|"))):.*$"
+        let pattern = "//\\s*(\(tags.joinWithSeparator("|"))):.*$"
 
         do {
             return try NSRegularExpression(pattern: pattern, options: [])
