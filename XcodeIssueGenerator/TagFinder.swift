@@ -119,7 +119,21 @@ struct TagFinder {
     }
 
     private func createEnumerator(sourceRoot: String?) -> NSDirectoryEnumerator? {
-        guard let sourceRoot = sourceRoot, sourceRootURL = NSURL(string: sourceRoot) else { return nil }
+        guard let sourceRoot = sourceRoot else {
+            print("No $SRCROOT.")
+            return nil
+        }
+
+        guard let escapedSourceRoot = sourceRoot.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet()) else {
+            print("Could not escape $SRCROOT.")
+            return nil
+        }
+
+        guard let sourceRootURL = NSURL(string: escapedSourceRoot) else {
+            print("Could not create NSURL from escaped $SRCROOT.")
+            return nil
+        }
+
         guard NSFileManager.isDirectory(sourceRoot) else { return nil }
 
         return NSFileManager.defaultManager().enumeratorAtURL(sourceRootURL,
