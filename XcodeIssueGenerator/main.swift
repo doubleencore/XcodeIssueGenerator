@@ -83,6 +83,4 @@ func main() {
 main()
 
 // TODO: Dogfooding the issue generator with a TODO.
-// FIXME: Dogfooding the issue generator with a FIXME.
 // WARNING: Dogfooding the issue generator with a WARNING.
-// CRITICAL: Dogfooding the issue generator with a CRITICAL.
