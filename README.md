@@ -18,7 +18,7 @@ Select the target on which to run XcodeIssueGenerator, select Build Phases, and 
 ```
 if which XcodeIssueGenerator >/dev/null; then
     # Mark WARNINGs, SERIOUSs, and TODOs as warnings in DEBUG builds excluding the Vendor and Third Party directories.
-    XcodeIssueGenerator -b DEBUG -w "WARNING, SERIOUS" -e TODO -x "Vendor/, Third Party/"
+    XcodeIssueGenerator -b DEBUG -w "WARNING, SERIOUS, TODO" -x "Vendor/, Third Party/"
 
     # Mark WARNINGs and SERIOUSs as warnings and TODOs as errors in RELEASE builds excluding the Vendor and Third Party directories.
     XcodeIssueGenerator -b RELEASE -w "WARNING, SERIOUS" -e TODO -x "Vendor/, Third Party/"
