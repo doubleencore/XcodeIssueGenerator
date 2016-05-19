@@ -1,6 +1,12 @@
 # XcodeIssueGenerator
 
-An executable that can be placed in a Run Script Build Phase that marks comments like ```// TODO:``` or ```// SERIOUS:``` as warnings or errors so they display in the Xcode Issue Navigator. Warning or error behavior for comments can be configured differently per build configuration—you can have a ```// TODO:``` be a warning in DEBUG and be an error in RELEASE for instance. An upside of using this program as compared to something like ```#warning``` pragmas is we can keep "treat warnings as errors" on in the host project build settings since this executable runs post-build.
+An executable that can be called from a Run Script Build Phase that makes comments such as ```// TODO:``` or ```// SERIOUS:``` appear in Xcode's Issue Navigator giving them project-wide visibility.
+
+- Works in Swift files.
+- An upside of using this program as compared to ```#warning``` pragmas available to Objective-C is we can keep "treat warnings as errors" on in the host project build settings since this executable runs post-build.
+- Comments can be configured as warnings or errors. Error-producing comments stop the build from succeeding.
+- Warning or error behavior for comments can be configured differently per build configuration—you can have a ```// TODO:``` be a warning in DEBUG and be an error in RELEASE for instance.
+
 
 ## Setup
 Download the latest [release](https://github.com/doubleencore/XcodeIssueGenerator/releases) or build the project yourself. Copy the XcodeIssueGenerator executable to your ```/usr/local/bin``` directory and make it executable: ```chmod +x /usr/local/bin/XcodeIssueGenerator```. Call the XcodeIssueGenerator executable from a Run Script build phase.
@@ -10,14 +16,19 @@ Select the target on which to run XcodeIssueGenerator, select Build Phases, and 
 
 ### Example Run Script
 ```
-# Mark WARNINGs and SERIOUSs as warnings and TODOs as errors in RELEASE builds excluding the Vendor and Third Party directories.
 
 if which XcodeIssueGenerator >/dev/null; then
+    # Mark WARNINGs, SERIOUSs, and TODOs as warnings in DEBUG builds excluding the Vendor and Third Party directories.
+    XcodeIssueGenerator -b DEBUG -w "WARNING, SERIOUS" -e TODO -x "Vendor/, Third Party/"
+
+    # Mark WARNINGs and SERIOUSs as warnings and TODOs as errors in RELEASE builds excluding the Vendor and Third Party directories.
     XcodeIssueGenerator -b RELEASE -w "WARNING, SERIOUS" -e TODO -x "Vendor/, Third Party/"
 else
     echo "warning: XcodeIssueGenerator is not installed."
 fi
 ```
+
+With the Run Script above, we'll show all comments in Issue Navigator as warnings in DEBUG builds. In RELEASE builds, we'll mark TODOs as errors as a way to block unfinished work from becoming part of a release build.
 
 ### Options
 
