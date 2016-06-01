@@ -8,7 +8,17 @@ An executable that can be called from a Run Script Build Phase that makes commen
 - Warning or error behavior for comments can be configured differently per build configuration—you can have a ```// TODO:``` be a warning in DEBUG and be an error in RELEASE for instance.
 
 
-## Setup
+## Installation
+
+### Install with [Homebrew](http://brew.sh)
+
+```
+brew tap doubleencore/tap
+brew install xcodeissuegenerator
+```
+
+### Install Manually
+
 Download the latest [release](https://github.com/doubleencore/XcodeIssueGenerator/releases) or build the project yourself. Copy the XcodeIssueGenerator executable to your ```/usr/local/bin``` directory and make it executable: ```chmod +x /usr/local/bin/XcodeIssueGenerator```. Call the XcodeIssueGenerator executable from a Run Script build phase.
 
 ### Adding a Run Script Build Phase
