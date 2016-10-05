@@ -33,7 +33,7 @@ class ArgumentParser {
         static let CouldNotMakeExcludeDirectoryMessage = "Could not make exclude directory. Directories should be relative to the project file which is the same as being relative to ($SRCROOT)."
     }
 
-    static func printUsage(executableName: String) {
+    static func printUsage(_ executableName: String) {
         print("Usage:")
         print("\t\(executableName) -w warning tags -e error tags -b build configuration -x exclude directories")
     }
@@ -54,7 +54,7 @@ class ArgumentParser {
     var errorTags: [String]?
     var buildConfig: String?
 
-    var excludeURLs = [NSURL]()
+    var excludeURLs = [URL]()
 
     /**
      Parse arguments into warning tags, error tags, build configuration, and exclude URLs.
@@ -63,20 +63,20 @@ class ArgumentParser {
 
      - returns: Bool indicating if we met the minimum argument requirements.
      */
-    func parseArguments(arguments: [String]) -> Bool {
-        var argumentsGenerator = arguments.generate()
+    func parse(_ arguments: [String]) -> Bool {
+        var argumentsGenerator = arguments.makeIterator()
 
         while let arg = argumentsGenerator.next() {
             switch arg {
             case "-w":
                 if let next = argumentsGenerator.next() {
-                    warningTags = splitList(next)
+                    warningTags = split(list: next)
                 } else {
                     print(K.InsufficientArgumentsMessage)
                 }
             case "-e":
                 if let next = argumentsGenerator.next() {
-                    errorTags = splitList(next)
+                    errorTags = split(list: next)
                 } else {
                     print(K.InsufficientArgumentsMessage)
                 }
@@ -88,8 +88,8 @@ class ArgumentParser {
                 }
             case "-x":
                 if let next = argumentsGenerator.next() {
-                    let excludePaths = splitList(next)
-                    excludeURLs.appendContentsOf(makeURLsFromExcludePaths(excludePaths))
+                    let excludePaths = split(list: next)
+                    excludeURLs.append(contentsOf: makeURLs(from: excludePaths))
                 } else {
                     print(K.InsufficientArgumentsMessage)
                 }
@@ -115,24 +115,24 @@ class ArgumentParser {
 
      - returns: Array of strings with whitespace trimmed.
     */
-    private func splitList(list: String?) -> [String]? {
+    private func split(list: String?) -> [String]? {
         guard let list = list else { return nil }
 
-        let components = list.componentsSeparatedByString(",")
+        let components = list.components(separatedBy: ",")
 
-        return components.map { $0.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet()) }
+        return components.map { $0.trimmingCharacters(in: CharacterSet.whitespaces) }
     }
 
-    private func makeURLsFromExcludePaths(excludePaths: [String]?) -> [NSURL] {
+    private func makeURLs(from excludePaths: [String]?) -> [URL] {
         guard let excludePaths = excludePaths else { return [] }
 
-        var excludeURLs = [NSURL]()
+        var excludeURLs = [URL]()
 
         for excludePath in excludePaths {
             let fullExcludePath = "\(sourceRoot)/\(excludePath)"
 
-            if NSFileManager.isDirectory(fullExcludePath) {
-                excludeURLs.append(NSURL(fileURLWithPath: fullExcludePath))
+            if FileManager.isDirectory(fullExcludePath) {
+                excludeURLs.append(URL(fileURLWithPath: fullExcludePath))
             } else {
                 print(K.CouldNotMakeExcludeDirectoryMessage)
             }

@@ -28,7 +28,7 @@ extension String {
 
     func truncate(length: Int) -> String {
         if self.characters.count > length {
-            return self.substringToIndex(self.startIndex.advancedBy(length))
+            return self.substring(to: self.characters.index(self.startIndex, offsetBy: length))
         } else {
             return self
         }

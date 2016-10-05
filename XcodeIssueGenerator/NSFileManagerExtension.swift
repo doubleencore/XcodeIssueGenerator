@@ -24,12 +24,12 @@
 
 import Foundation
 
-extension NSFileManager {
+extension FileManager {
 
-    static func isDirectory(directory: String) -> Bool {
+    static func isDirectory(_ directory: String) -> Bool {
         var isDirectory: ObjCBool = ObjCBool(false)
-        let exists: Bool = NSFileManager.defaultManager().fileExistsAtPath(directory, isDirectory: &isDirectory)
+        let exists: Bool = FileManager.default.fileExists(atPath: directory, isDirectory: &isDirectory)
 
-        return exists && Bool(isDirectory)
+        return exists && isDirectory.boolValue
     }
 }

@@ -36,47 +36,47 @@ struct TagFinder {
 
     // MARK: Internal
 
-    func findWarnings(warnings: [String]?, errors: [String]?, fromPath: String?, excludeURLs: [NSURL]) -> (foundErrorTag: Bool, error: Bool) {
+    func find(warnings: [String]?, errors: [String]?, fromPath: String?, excludeURLs: [URL]) -> (foundErrorTag: Bool, error: Bool) {
         guard let enumerator = createEnumerator(fromPath) else { return (false, true) }
 
         var foundErrorTag = false
 
-        let warningRegex = makeRegexWithTags(warnings)
-        let errorRegex = makeRegexWithTags(errors)
+        let warningRegex = makeRegex(with: warnings)
+        let errorRegex = makeRegex(with: errors)
 
-        while let URL = enumerator.nextObject() as? NSURL, ext = URL.pathExtension, urlPath = URL.path {
-            if NSFileManager.isDirectory(urlPath) || K.markableFileExtensions.contains(ext) == false {
+        while let URL = enumerator.nextObject() as? URL {
+            if FileManager.isDirectory(URL.path) || K.markableFileExtensions.contains(URL.pathExtension) == false {
                 // Skip directories and file extensions we do not care about.
                 continue
             }
 
             // Skip files in directories that are in the exclude list.
-            if path(urlPath, excludedByURLs: excludeURLs) {
+            if path(URL.path, excludedByURLs: excludeURLs) {
                 continue
             }
 
             var text: String
             do {
-                text = try String(contentsOfFile: urlPath, encoding: NSUTF8StringEncoding)
+                text = try String(contentsOfFile: URL.path, encoding: String.Encoding.utf8)
             } catch _ as NSError {
-                print("File IO error for path: \(urlPath).")
+                print("File IO error for path: \(URL.path).")
                 continue
             }
 
-            let lineArray = text.componentsSeparatedByString("\n")
+            let lineArray = text.components(separatedBy: "\n")
 
             // Find issue comments in the file, print a line with the issue type prepended to the comment line.
-            for (lineNumber, line) in lineArray.enumerate() {
+            for (lineNumber, line) in lineArray.enumerated() {
                 if let warningRegex = warningRegex {
-                    let warningMatches = matchesForRegex(warningRegex, inText: line)
+                    let warningMatches = matches(for: warningRegex, inText: line)
 
-                    warningMatches.forEach { print("\(urlPath):\(lineNumber + 1): warning: \($0)") }
+                    warningMatches.forEach { print("\(URL.path):\(lineNumber + 1): warning: \($0)") }
                 }
 
                 if let errorRegex = errorRegex {
-                    let errorMatches = matchesForRegex(errorRegex, inText: line)
+                    let errorMatches = matches(for: errorRegex, inText: line)
 
-                    errorMatches.forEach { print("\(urlPath):\(lineNumber + 1): error: \($0)") }
+                    errorMatches.forEach { print("\(URL.path):\(lineNumber + 1): error: \($0)") }
 
                     if errorMatches.isEmpty == false { foundErrorTag = true }
                 }
@@ -88,15 +88,15 @@ struct TagFinder {
 
     // MARK: Private
 
-    private func path(path: String, excludedByURLs excludeURLs: [NSURL]) -> Bool {
+    private func path(_ path: String, excludedByURLs excludeURLs: [URL]) -> Bool {
 
-        func cleanPath(path: String?) -> String? {
-            return path?.lowercaseString.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
+        func clean(path: String?) -> String? {
+            return path?.lowercased().trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
         }
 
         for excludeURL in excludeURLs {
-            if let path = cleanPath(path), excludePath = cleanPath(excludeURL.path) {
-                if path.truncate(excludePath.characters.count) == excludePath {
+            if let path = clean(path: path), let excludePath = clean(path: excludeURL.path) {
+                if path.truncate(length: excludePath.characters.count) == excludePath {
                     return true
                 }
             }
@@ -105,10 +105,10 @@ struct TagFinder {
         return false
     }
 
-    private func makeRegexWithTags(tags: [String]?) -> NSRegularExpression? {
+    private func makeRegex(with tags: [String]?) -> NSRegularExpression? {
         guard let tags = tags else { return nil }
 
-        let pattern = "//\\s*(\(tags.joinWithSeparator("|"))):.*$"
+        let pattern = "//\\s*(\(tags.joined(separator: "|"))):.*$"
 
         do {
             return try NSRegularExpression(pattern: pattern, options: [])
@@ -118,34 +118,34 @@ struct TagFinder {
         }
     }
 
-    private func createEnumerator(sourceRoot: String?) -> NSDirectoryEnumerator? {
+    private func createEnumerator(_ sourceRoot: String?) -> FileManager.DirectoryEnumerator? {
         guard let sourceRoot = sourceRoot else {
             print("No $SRCROOT.")
             return nil
         }
 
-        guard let escapedSourceRoot = sourceRoot.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet()) else {
+        guard let escapedSourceRoot = sourceRoot.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed) else {
             print("Could not escape $SRCROOT.")
             return nil
         }
 
-        guard let sourceRootURL = NSURL(string: escapedSourceRoot) else {
+        guard let sourceRootURL = URL(string: escapedSourceRoot) else {
             print("Could not create NSURL from escaped $SRCROOT.")
             return nil
         }
 
-        guard NSFileManager.isDirectory(sourceRoot) else { return nil }
+        guard FileManager.isDirectory(sourceRoot) else { return nil }
 
-        return NSFileManager.defaultManager().enumeratorAtURL(sourceRootURL,
+        return FileManager.default.enumerator(at: sourceRootURL,
                                                               includingPropertiesForKeys: nil,
-                                                              options: [.SkipsHiddenFiles],
+                                                              options: [.skipsHiddenFiles],
                                                               errorHandler: nil)
     }
 
-    private func matchesForRegex(regex: NSRegularExpression, inText text: String) -> [String] {
+    private func matches(for regex: NSRegularExpression, inText text: String) -> [String] {
         let nsString = text as NSString
-        let results = regex.matchesInString(text, options: [], range: NSRange(location: 0, length: nsString.length))
+        let results = regex.matches(in: text, options: [], range: NSRange(location: 0, length: nsString.length))
 
-        return results.map { nsString.substringWithRange($0.range) }
+        return results.map { nsString.substring(with: $0.range) }
     }
 }

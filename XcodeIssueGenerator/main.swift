@@ -25,20 +25,20 @@
 import Foundation
 
 // Process
-let arguments = Process.arguments
+let arguments = CommandLine.arguments
 
 var executableName: String?
 if let firstArgument = arguments.first {
-    executableName = NSURL(fileURLWithPath: firstArgument).lastPathComponent
+    executableName = URL(fileURLWithPath: firstArgument).lastPathComponent
 }
 
 // Environment
-let environmentVariables = NSProcessInfo.processInfo().environment
-let configuration = environmentVariables["CONFIGURATION"]?.uppercaseString
+let environmentVariables = ProcessInfo.processInfo.environment
+let configuration = environmentVariables["CONFIGURATION"]?.uppercased()
 let sourceRoot = environmentVariables["SRCROOT"]
 
 func main() {
-    guard let name = executableName where name.isEmpty == false else {
+    guard let name = executableName, name.isEmpty == false else {
         print("No executable name.")
         return
     }
@@ -54,7 +54,7 @@ func main() {
     }
 
     let argumentParser = ArgumentParser(sourceRoot: sourceRoot)
-    guard argumentParser.parseArguments(arguments) else {
+    guard argumentParser.parse(arguments) else {
         ArgumentParser.printUsage(name)
         return
     }
@@ -67,7 +67,7 @@ func main() {
     // If we get this far, we have parsed our arguments and we are satisfied with the environment.
 
     let tagFinder = TagFinder()
-    let errors = tagFinder.findWarnings(argumentParser.warningTags, errors: argumentParser.errorTags, fromPath: sourceRoot, excludeURLs: argumentParser.excludeURLs)
+    let errors = tagFinder.find(warnings: argumentParser.warningTags, errors: argumentParser.errorTags, fromPath: sourceRoot, excludeURLs: argumentParser.excludeURLs)
 
     if errors.error {
         print("An error ocurred while finding tags.")
