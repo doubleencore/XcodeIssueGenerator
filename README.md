@@ -17,6 +17,8 @@ brew tap doubleencore/tap
 brew install xcodeissuegenerator
 ```
 
+Xcode 8 and Swift 3 are required to build XcodeIssueGenerator.
+
 ### Install Manually
 
 Download the latest [release](https://github.com/doubleencore/XcodeIssueGenerator/releases) or build the project yourself. Copy the XcodeIssueGenerator executable to your ```/usr/local/bin``` directory and make it executable: ```chmod +x /usr/local/bin/XcodeIssueGenerator```. Call the XcodeIssueGenerator executable from a Run Script build phase.
